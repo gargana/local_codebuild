@@ -97,7 +97,7 @@ then
 fi
 
 #docker_command="docker run -it "
-docker_command="docker run "
+docker_command="yes | docker run "
 if isOSWindows
 then
     docker_command+="-v //var/run/docker.sock:/var/run/docker.sock -e "
