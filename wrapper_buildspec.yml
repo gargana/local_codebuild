@@ -1,0 +1,75 @@
+version: 0.2
+
+#env:
+  #variables:
+     # key: "value"
+     # key: "value"
+  #parameter-store:
+     # key: "value"
+     # key: "value"
+  #secrets-manager:
+     # key: secret-id:json-key:version-stage:version-id
+     # key: secret-id:json-key:version-stage:version-id
+  #exported-variables:
+     # - variable
+     # - variable
+  #git-credential-helper: yes
+#batch:
+  #fast-fail: true
+  #build-list:
+  #build-matrix:
+  #build-graph:
+phases:
+  install:
+    #If you use the Ubuntu standard image 2.0 or later, you must specify runtime-versions.
+    #If you specify runtime-versions and use an image other than Ubuntu standard image 2.0, the build fails.
+    #runtime-versions:
+      # name: version
+      # name: version
+    commands:
+      - yum install git
+      - docker pull public.ecr.aws/codebuild/local-builds:latest
+      - docker inspect public.ecr.aws/codebuild/local-builds:latest
+      - echo fdfff9470520c53dcd522606a3cc2b5df195ae8a5546697b08249b48175f45ed
+      - docker image ls
+      # - command
+  pre_build:
+    commands:
+      - git clone https://github.com/gargana/local_codebuild.git
+      #- wget https://raw.githubusercontent.com/aws/aws-codebuild-docker-images/master/local_builds/codebuild_build.sh
+      #- chmod +x codebuild_build.sh
+      - cp local_codebuild/codebuild_build.sh .
+      - chmod +x codebuild_build.sh
+      # - command
+  build:
+    commands:
+      - AD=./local_codebuild
+      - unset AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
+      - set | grep '^AWS' | grep -v CREDENTI > ./env.txt
+      - cat ./env.txt
+      - ./codebuild_build.sh -l public.ecr.aws/codebuild/local-builds:latest -i public.ecr.aws/codebuild/local-builds:latest -a ${AD} -s${AD} -e ./env.txt | tee ./docker.log
+      - cat ./docker.log
+      - docker inspect $(docker container ls -a | tail -n 1 | awk '{print $1}')
+      # - command
+  #post_build:
+    #commands:
+      # - command
+      # - command
+#reports:
+  #report-name-or-arn:
+    #files:
+      # - location
+      # - location
+    #base-directory: location
+    #discard-paths: yes
+    #file-format: JunitXml | CucumberJson
+#artifacts:
+  #files:
+    # - location
+    # - location
+  #name: $(date +%Y-%m-%d)
+  #discard-paths: yes
+  #base-directory: location
+#cache:
+  #paths:
+    # - paths
